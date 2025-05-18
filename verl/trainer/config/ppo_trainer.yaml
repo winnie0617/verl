@@ -199,8 +199,8 @@ reward_model:
   launch_reward_fn_async: False # custom reward function executed async on CPU, during log_prob
 
 custom_reward_function:
-  path: null
-  name: compute_score
+  path: /users/wychow/ads_summarization/src/utils/metrics.py
+  name: cross_entropy_reward
 
 algorithm:
   gamma: 1.0
