@@ -198,9 +198,13 @@ reward_model:
   reward_manager: naive
   launch_reward_fn_async: False # custom reward function executed async on CPU, during log_prob
 
+# custom_reward_function:
+#   path: /users/wychow/ads_summarization/src/utils/metrics.py
+#   name: cross_entropy_reward
+
 custom_reward_function:
-  path: /users/wychow/ads_summarization/src/utils/metrics.py
-  name: cross_entropy_reward
+  path: null
+  name: compute_score
 
 algorithm:
   gamma: 1.0

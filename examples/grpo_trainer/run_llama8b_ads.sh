@@ -5,7 +5,7 @@ python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
     data.train_files=../../../data/rl_dataset.parquet \
     data.val_files=../../../data/rl_dataset.parquet \
-    data.train_batch_size=8 \
+    data.train_batch_size=1 \
     data.max_prompt_length=4096 \
     data.max_response_length=1024 \
     data.filter_overlong_prompts=True \
@@ -30,11 +30,13 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu=1 \
     actor_rollout_ref.ref.fsdp_config.param_offload=True \
     algorithm.use_kl_in_reward=False \
+    custom_reward_function.path=/users/wychow/ads_summarization/src/utils/metrics.py\
+    custom_reward_function.name=cross_entropy_reward\
     trainer.critic_warmup=0 \
-    trainer.logger=['wandb'] \
+    trainer.logger=['console','wandb'] \
     trainer.project_name='verl_grpo_example_gsm8k' \
     trainer.experiment_name='ads_test' \
-    trainer.n_gpus_per_node=2 \
+    trainer.n_gpus_per_node=4 \
     trainer.nnodes=1 \
     trainer.save_freq=20 \
     trainer.test_freq=5 \
