@@ -9,7 +9,10 @@ set -x
 # actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu: The batch size for one forward pass in the computation of ref_log_prob. The value represent the local num per gpu.
 # actor_rollout_ref.rollout.log_prob_micro_batch_size_per_gpu: Micro batch size per gpu (The batch size for one forward pass) for recalculating log_prob. The value represent the local num per gpu.
 
-
+# Create checkpoint directories and cleanup any existing checkpoints
+CHECKPOINT_DIR="checkpoints/verl_grpo_example_gsm8k/ads_test"
+# rm -rf $CHECKPOINT_DIR
+mkdir -p $CHECKPOINT_DIR
 
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
@@ -41,7 +44,7 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.ref.fsdp_config.param_offload=True \
     algorithm.use_kl_in_reward=False \
     custom_reward_function.path=${PWD}/../../../src/utils/metrics.py\
-    custom_reward_function.name=length_reward\
+    custom_reward_function.name=cross_entropy_reward\
     trainer.critic_warmup=0 \
     trainer.logger=['console','wandb'] \
     trainer.project_name='verl_grpo_example_gsm8k' \
@@ -49,8 +52,11 @@ python3 -m verl.trainer.main_ppo \
     trainer.n_gpus_per_node=4 \
     trainer.nnodes=1 \
     trainer.test_freq=5 \
-    trainer.save_freq=-1 \
+    trainer.save_freq=1 \
     trainer.total_epochs=15 \
+    trainer.default_local_dir=$CHECKPOINT_DIR \
+    trainer.resume_mode=auto \
+    trainer.del_local_ckpt_after_load=False \
     ray_init.num_cpus=48 $@
 
     # null means using all CPUs, which might cause hang if limited in systems like SLURM
