@@ -41,7 +41,9 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.ref.fsdp_config.param_offload=True \
     algorithm.use_kl_in_reward=False \
     custom_reward_function.path=${PWD}/../../../src/utils/metrics.py\
-    custom_reward_function.name=cross_entropy_reward\
+    custom_reward_function.name=combined_reward\
+    custom_reward_function.extra_info.reward_type=cross_entropy\
+    custom_reward_function.extra_info.main_reward_weight=0.7\
     trainer.critic_warmup=0 \
     trainer.logger=['console','wandb'] \
     trainer.project_name='verl_grpo_example_gsm8k' \
