@@ -3,8 +3,8 @@ set -x
 # normalized ppo_mini_batch_size 20 should be divisible by ppo_micro_batch_size_per_gpu 8
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
-    data.train_files=../../../data/rl_dataset_train.parquet \
-    data.val_files=../../../data/rl_dataset_val.parquet \
+    data.train_files=${PWD}/../../../data/rl_dataset_train.parquet \
+    data.val_files=${PWD}/../../../data/rl_dataset_val.parquet \
     data.train_batch_size=48 \
     data.max_prompt_length=4096 \
     data.max_response_length=1024 \
@@ -30,7 +30,7 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu=48 \
     actor_rollout_ref.ref.fsdp_config.param_offload=True \
     algorithm.use_kl_in_reward=False \
-    custom_reward_function.path=/users/wychow/ads_summarization/src/utils/metrics.py\
+    custom_reward_function.path=${PWD}/../../../src/utils/metrics.py\
     custom_reward_function.name=cross_entropy_reward\
     trainer.critic_warmup=0 \
     trainer.logger=['console','wandb'] \
