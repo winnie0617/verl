@@ -11,7 +11,6 @@
 
 # load necessary modules
 module load slurm
-module unload nvhpc
 module load cudnn/cuda12/9.3.0.75
 
 #Enable the bash shell
@@ -39,8 +38,8 @@ python3 -m verl.trainer.main_ppo \
     data.truncation='error' \
     actor_rollout_ref.model.path=meta-llama/Llama-3.1-8B-Instruct \
     actor_rollout_ref.model.use_remove_padding=True \
-    actor_rollout_ref.actor.optim.lr=1e-6 \
-    actor_rollout_ref.actor.ppo_mini_batch_size=32 \
+    actor_rollout_ref.actor.optim.lr=1e-7 \
+    actor_rollout_ref.actor.ppo_mini_batch_size=32\
     actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=8 \
     actor_rollout_ref.actor.use_kl_loss=True \
     actor_rollout_ref.actor.kl_loss_coef=0.001 \
@@ -58,11 +57,11 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.ref.fsdp_config.param_offload=True \
     algorithm.use_kl_in_reward=False \
     custom_reward_function.path=${PWD}/../../../src/utils/metrics.py\
-    custom_reward_function.name=cross_entropy_reward\
+    custom_reward_function.name=combined_reward\
     trainer.critic_warmup=0 \
     trainer.logger=['console','wandb'] \
     trainer.project_name='verl_grpo_example_gsm8k' \
-    trainer.experiment_name='ads_test_bs32_rollout_4_cot_simple' \
+    trainer.experiment_name='cot_ads_test_bs32_lr_1e-7_rollout_4' \
     trainer.n_gpus_per_node=4 \
     trainer.nnodes=1 \
     trainer.test_freq=5 \
