@@ -22,7 +22,7 @@ python3 -m verl.trainer.main_ppo \
     data.truncation='error' \
     actor_rollout_ref.model.path=Qwen/Qwen2.5-7B-Instruct \
     actor_rollout_ref.model.use_remove_padding=True \
-    actor_rollout_ref.actor.optim.lr=1e-7 \
+    actor_rollout_ref.actor.optim.lr=5e-7 \
     actor_rollout_ref.actor.ppo_mini_batch_size=8 \
     actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=8 \
     actor_rollout_ref.actor.use_kl_loss=True \
@@ -44,11 +44,12 @@ python3 -m verl.trainer.main_ppo \
     custom_reward_function.name=combined_reward\
     trainer.critic_warmup=0 \
     trainer.logger=['console','wandb'] \
+    trainer.log_val_generations=100 \
     trainer.project_name='verl_grpo_example_gsm8k' \
-    trainer.experiment_name='len_reward_qwen_bs16_lr_1e-7_rollout_4_cot' \
+    trainer.experiment_name='debug_save_len_reward_qwen_bs16_lr_1e-7_rollout_4_cot' \
     trainer.n_gpus_per_node=4 \
     trainer.nnodes=1 \
-    trainer.test_freq=50 \
+    trainer.test_freq=25 \
     trainer.save_freq=-1 \
     trainer.total_epochs=15 \
     ray_init.num_cpus=48 $@

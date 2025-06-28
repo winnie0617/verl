@@ -98,6 +98,7 @@ def compute_data_metrics(batch: DataProto, use_critic: bool = True) -> Dict[str,
             - critic/vf_explained_var: Explained variance of the value function (if use_critic=True)
             - response_length/mean, max, min, clip_ratio: Statistics about response lengths
             - prompt_length/mean, max, min, clip_ratio: Statistics about prompt lengths
+            - reward_components/{component}/mean, max, min: Statistics about individual reward components
     """
     sequence_score = batch.batch["token_level_scores"].sum(-1)
     sequence_reward = batch.batch["token_level_rewards"].sum(-1)
@@ -165,6 +166,39 @@ def compute_data_metrics(batch: DataProto, use_critic: bool = True) -> Dict[str,
         "prompt_length/min": torch.min(prompt_length).detach().item(),
         "prompt_length/clip_ratio": torch.mean(torch.eq(prompt_length, max_prompt_length).float()).detach().item(),
     }
+    
+    # Add individual reward component metrics if available
+    if hasattr(batch, 'non_tensor_batch') and batch.non_tensor_batch:
+        # Look for reward components in non_tensor_batch
+        reward_components = {}
+        for key, value in batch.non_tensor_batch.items():
+            # Skip non-reward related keys
+            if key in ['uid', 'data_source', 'extra_info']:
+                continue
+            # Check if this looks like a reward component (numeric values)
+            if isinstance(value, (list, np.ndarray)) and len(value) > 0:
+                try:
+                    # Convert to numpy array for easier processing
+                    if isinstance(value, list):
+                        value_array = np.array(value)
+                    else:
+                        value_array = value
+                    
+                    # Only process if it's numeric
+                    if np.issubdtype(value_array.dtype, np.number):
+                        reward_components[key] = value_array
+                except (ValueError, TypeError):
+                    continue
+        
+        # Compute metrics for each reward component
+        for component_name, component_values in reward_components.items():
+            if len(component_values) > 0:
+                metrics[f"reward_components/{component_name}/mean"] = float(np.mean(component_values))
+                metrics[f"reward_components/{component_name}/max"] = float(np.max(component_values))
+                metrics[f"reward_components/{component_name}/min"] = float(np.min(component_values))
+                if len(component_values) > 1:
+                    metrics[f"reward_components/{component_name}/std"] = float(np.std(component_values))
+    
     return metrics
 
 
